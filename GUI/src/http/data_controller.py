@@ -339,6 +339,9 @@ async def start_simulation(request: Request):
     else:
         command = f'./ns3 run "{scenario}"'
     command = f'curl -X POST -d \'{command}\' http://{remote_host}:38866'
+    number_of_ues = int(form_data.get('N_Ues', 3))
+    number_of_cells = int(form_data.get('N_LteEnbNodes', 1)) + int(form_data.get('N_MmWaveEnbNodes', 4))
+    SimulationManager._simulation = Simulation(number_of_ues, number_of_cells)
     try:
         print(f'Sending start command: {command}')
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
@@ -348,12 +351,6 @@ async def start_simulation(request: Request):
         SimulationManager.start_simulation(scenario)
     except Exception as e:
         print(f"An error occurred: {e}")
-    number_of_ues = int(form_data.get('N_Ues', 2))
-    number_of_cells = int(form_data.get('N_LteEnbNodes', 1)) + int(form_data.get('N_MmWaveEnbNodes', 4))
-    if not flags:
-        number_of_ues = 0
-        number_of_cells = 0
-    SimulationManager._simulation = Simulation(number_of_ues, number_of_cells)
 
 
 

@@ -26,12 +26,12 @@ class BashRequestHandler(BaseHTTPRequestHandler):
         try:
             if post_data == "start":
                 # Log file for the process
-                log_file = 'xapp_rc_handover_ctrl.log'  # Fixed log file name for the process
+                log_file = 'xapp_es_with_cell_util.log'  # Fixed log file name for the process
                 with open(log_file, 'w') as log:
                     print(
-                        f"Starting process: ./build/examples/xApp/c/ctrl/xapp_rc_handover_ctrl, logging to: {log_file}")
+                        f"Starting process: ./build/examples/xApp/c/orange/xapp_es_with_cell_util -p ./build/lib/, logging to: {log_file}")
                     process = subprocess.Popen(
-                        "stdbuf -oL -eL ./build/examples/xApp/c/ctrl/xapp_rc_handover_ctrl",
+                        "stdbuf -oL -eL ./build/examples/xApp/c/orange/xapp_es_with_cell_util -p ./build/lib/",
                         shell=True, stdout=log, stderr=log, executable='/bin/bash'
                     )
                     print(f"Process started with PID: {process.pid}")

@@ -4,22 +4,28 @@ from influxdb import InfluxDBClient
 
 
 def read_and_clear_csv(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
         lines = file.readlines()
+
+    if not lines:
+        return []
 
     headers = lines[0].strip()
     data = [line.strip() for line in lines[1:]]
 
     result = [headers] + data
 
-    with open(file_path, 'w') as file:
+    with open(file_path, 'w', encoding='utf-8') as file:
         file.write(headers + '\n')
 
     return result
 
 def read_csv(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
         lines = file.readlines()
+
+    if not lines:
+        return []
 
     headers = lines[0].strip()
     data = [line.strip() for line in lines[1:]]
@@ -37,6 +43,8 @@ def push_count_to_influx(
         influx_user='root',
         influx_password='root'):
     data = read_csv(file_path)
+    if not data or len(data) < 2:
+        return
 
     client = InfluxDBClient(
         host=influx_host,
@@ -114,6 +122,8 @@ def push_data_to_influx(
         influx_user='root',
         influx_password='root'):
     data = read_and_clear_csv(file_path)
+    if not data or len(data) < 2:
+        return
     ue_fields = {
         'l3 serving id(m_cellid)',
         'drb.estabsucc.5qi.ueid',
@@ -349,25 +359,28 @@ def main():
         files_to_process = core_files + additional_files
 
         for file_path in files_to_process:
-            if os.path.exists(file_path):
-                if file_path in core_files:
-                    push_count_to_influx(
-                    file_path,
-                    db_name,
-                    core_files,
-                    influx_host,
-                    influx_port,
-                    influx_user,
-                    influx_password)
+            try:
+                if os.path.exists(file_path):
+                    if file_path in core_files:
+                        push_count_to_influx(
+                        file_path,
+                        db_name,
+                        core_files,
+                        influx_host,
+                        influx_port,
+                        influx_user,
+                        influx_password)
 
-                push_data_to_influx(
-                    file_path,
-                    db_name,
-                    core_files,
-                    influx_host,
-                    influx_port,
-                    influx_user,
-                    influx_password)
+                    push_data_to_influx(
+                        file_path,
+                        db_name,
+                        core_files,
+                        influx_host,
+                        influx_port,
+                        influx_user,
+                        influx_password)
+            except Exception as e:
+                print(f"Error processing file {file_path}: {e}")
 
         time.sleep(3)
 

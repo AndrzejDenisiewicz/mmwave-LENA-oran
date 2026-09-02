@@ -6,7 +6,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 class BashRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         # Process name to stop
-        process_name = "xapp_rc_handove"
+        process_name = "xapp_es_with_cell"
 
         print(f"Received request to stop process: {process_name}")
 

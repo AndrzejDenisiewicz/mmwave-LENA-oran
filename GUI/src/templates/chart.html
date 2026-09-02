@@ -1724,6 +1724,9 @@
                     const joinLabel = document.getElementById('label_between_status_and_simid')
                     const statusLabel = document.getElementById('status_label');
                     if (data.sim_id != 'off') {
+                        if (statusLabel.textContent !== 'Stopping simulation' && statusLabel.textContent !== 'Simulation stopped' && statusLabel.textContent !== 'Resetting simulation') {
+                            statusLabel.textContent = 'Simulation running';
+                        }
                         joinLabel.textContent = ', simulation id = '
                         simIdLabel.textContent = data.sim_id;
                     } else {
@@ -2475,7 +2478,7 @@
     updateChart();
 
     function sendForm(endpoint) {
-        resetSim()
+        resetSim('/reset_simulation')
         const form = document.getElementById('simulationForm');
         const formData = new FormData(form);
         const data = {};
@@ -2562,7 +2565,7 @@
                 });
     }
 
-    function resetSim(endpoint) {
+    function resetSim(endpoint = '/reset_simulation') {
         const statusLabel = document.getElementById('status_label');
         statusLabel.textContent = 'Resetting simulation';
         const resetButton = document.getElementById('reset_button')
